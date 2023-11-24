@@ -91,15 +91,44 @@ def run_to_get_reports(model, ds, name, label_map):
         gpts(model, ds, name, label_map)
     
 
+# if __name__ == '__main__':
+#     models = ['gpt3_5', 'gpt4', 'llama2']
+#     ds = ['../dataset/sms_spam_test_mini.csv', '../dataset/Corona_NLP_1_test_mini.csv',
+#         '../dataset/ecommerceDataset_test_mini.csv', '../dataset/financial_sentiment_test_mini.csv']
+#     names = ['sms', 'tweets', 'ecommerce', 'financial']
+#     label_maps = [SMS_LABELS, CORONA_LABELS, ECOMMERCE_LABELS, FINANCIAL_LABELS]
+    
+#     for model in models:
+#         for i in range(len(ds)):
+#             run_to_get_reports(model, ds[i], names[i], label_maps[i])
+
 if __name__ == '__main__':
-    models = ['gpt3_5', 'gpt4', 'llama2']
-    ds = ['../dataset/sms_spam_test_mini.csv', '../dataset/Corona_NLP_1_test_mini.csv',
-        '../dataset/ecommerceDataset_test_mini.csv', '../dataset/financial_sentiment_test_mini.csv']
-    names = ['sms', 'tweets', 'ecommerce', 'financial']
-    label_maps = [SMS_LABELS, CORONA_LABELS, ECOMMERCE_LABELS, FINANCIAL_LABELS]
+    # models = ['gpt3_5', 'gpt4']
+    models = ['llama2']
+    ds = ['../dataset/Corona_NLP_1_test_mini.csv']
+    names = []
+    for i in range(1, 6, 1):
+        names.append(f"tweets_new_{i}")
+        # if i > 0:
+        #     names.append(f"tweets_new_{i}")
+        # else:
+        #     names.append(f"tweets_new")
+            
+    # for i in range(5):
+    #     if i > 0:
+    #         names.append(f"tweets_clean_{i}")
+    #     else:
+    #         names.append(f"tweets_clean")
+    for i in range(1, 6, 1):
+        names.append(f"tweets_clean_{i}")
+        # if i > 0:
+        #     names.append(f"tweets_clean_{i}")
+        # else:
+        #     names.append(f"tweets_clean")
+    label_maps = [CORONA_LABELS]
     
     for model in models:
-        for i in range(len(ds)):
-            run_to_get_reports(model, ds[i], names[i], label_maps[i])
+        for i in range(len(names)):
+            run_to_get_reports(model, ds[0], names[i], label_maps[0])
     
     

@@ -23,10 +23,6 @@ def text_cleaner(tweet):
     return tweet
 
 def data_to_sequence(x_train, x_test, num_words):
-    for i in range(len(x_train)):
-        if not isinstance(x_train[i], str):
-            print(i + 1)
-        x_train[i] = text_cleaner(x_train[i])
     x_train = x_train.apply(text_cleaner)
     tokenizer = Tokenizer(num_words=num_words)
     tokenizer.fit_on_texts(x_train)

@@ -3,6 +3,7 @@ import time
 import json
 import pandas as pd
 import os
+from handle_data import text_cleaner
 
 def send_to_llama2(prompt, system_prompt):
     max_retry_attempts = 3
@@ -65,25 +66,38 @@ def excute_ai_task(prompt, records, name):
     except IOError as e:
         print(f"An error occurred: {e}")
 
-def do_tasks(address, name):
+def do_tasks(address, name, saved_name=None):
     f = f"./prompts/{name}.txt"
     with open(f, 'r') as file:
         prompt = file.read()
     records = pd.read_csv(address)
     records = records['text'].tolist()
-    excute_ai_task(prompt, records, name)
-              
-if __name__ == "__main__":
+    saved_name = name if saved_name is None else saved_name
+    excute_ai_task(prompt, records, saved_name)
+    time.sleep(30)
+    
+def run_baseline(i):
     sms_file = '../dataset/sms_spam_test_mini.csv'
     tweets_file = '../dataset/Corona_NLP_1_test_mini.csv'
     eco_file = '../dataset/ecommerceDataset_test_mini.csv'
     fin_file = '../dataset/financial_sentiment_test_mini.csv'
     
-    do_tasks(sms_file, 'sms')
+    # do_tasks(sms_file, 'sms')
+    do_tasks(tweets_file, 'tweets', f'tweets_new_{i}')
+    # do_tasks(eco_file, 'ecommerce')
+    # do_tasks(fin_file, 'financial')
+              
+def clean_up_tweets(i):
+    f = f"./prompts/tweets.txt"
+    with open(f, 'r') as file:
+        prompt = file.read()
+    sms_file = '../dataset/Corona_NLP_1_test_mini.csv'
+    records = pd.read_csv(sms_file)
+    records = records['text'].apply(text_cleaner).tolist()
+    excute_ai_task(prompt, records, f'tweets_clean_{i}')
     time.sleep(30)
-    do_tasks(tweets_file, 'tweets')
-    time.sleep(30)
-    do_tasks(eco_file, 'ecommerce')
-    time.sleep(30)
-    do_tasks(fin_file, 'financial')
-    time.sleep(30)
+        
+if __name__ == "__main__":
+    for i in range(2, 6, 1):
+        run_baseline(i)
+        clean_up_tweets(i)

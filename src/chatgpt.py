@@ -1,13 +1,11 @@
-import asyncio
+
 import openai
 import pandas as pd
-from time import sleep
-import requests
 import time
 import json
 import os
 import random
-
+from handle_data import text_cleaner
 
 def retry_with_exponential_backoff(
     func,
@@ -119,28 +117,49 @@ def excute_ai_task(prompt, records, name, model):
     except IOError as e:
         print(f"An error occurred: {e}")
 
-def do_tasks(address, name, model):
+def do_tasks(address, name, model, file_name=None, should_clean=False):
     f = f"./prompts/{name}.txt"
     with open(f, 'r') as file:
         prompt = file.read()
     records = pd.read_csv(address)
     records = records['text'].tolist()
-    excute_ai_task(prompt, records, name, model)
+    if should_clean:
+        records = [text_cleaner(r) for r in records]
+    saved_file_name = file_name if file_name is not None else name
+    excute_ai_task(prompt, records, saved_file_name, model)           
               
-if __name__ == "__main__":
-    openai.api_key = os.getenv('OPENAI_API_KEY') or 'YOUR_OPEN_AI_KEY'
-    
+  
+def run_baseline():
     for model in ['gpt-4-1106-preview', 'gpt-3.5-turbo-1106']:
         sms_file = '../dataset/sms_spam_test_mini.csv'
         tweets_file = '../dataset/Corona_NLP_1_test_mini.csv'
         eco_file = '../dataset/ecommerceDataset_test_mini.csv'
         fin_file = '../dataset/financial_sentiment_test_mini.csv'
         
-        do_tasks(sms_file, 'sms', model)
-        time.sleep(60)
-        do_tasks(tweets_file, 'tweets', model)
-        time.sleep(60)
-        do_tasks(eco_file, 'ecommerce', model)
-        time.sleep(60)
-        do_tasks(fin_file, 'financial', model)
-        time.sleep(60)
+        # do_tasks(sms_file, 'sms', model)
+        # time.sleep(60)
+        do_tasks(tweets_file, 'tweets', model, file_name='tweets_new_4')
+        # time.sleep(60)
+        # do_tasks(eco_file, 'ecommerce', model)
+        # time.sleep(60)
+        # do_tasks(fin_file, 'financial', model)
+        # time.sleep(60)           
+              
+              
+def run_tweets():
+    for i in range(5):
+        for model in ['gpt-4-1106-preview', 'gpt-3.5-turbo-1106']:
+            tweets_file = '../dataset/Corona_NLP_1_test_mini.csv'
+            prompt_file = 'tweets_covid'
+            file_name = 'tweets_covid'
+            do_tasks(tweets_file, prompt_file, model, file_name=f"{file_name}_{i}", should_clean=False)
+            time.sleep(30)
+            do_tasks(tweets_file, prompt_file, model, file_name=f"{file_name}_clean_{i}", should_clean=True)
+            time.sleep(30)
+            
+
+              
+if __name__ == "__main__":
+    openai.api_key = os.getenv('OPENAI_API_KEY') or 'YOUR_OPEN_AI_KEY'
+    
+    run_tweets()
