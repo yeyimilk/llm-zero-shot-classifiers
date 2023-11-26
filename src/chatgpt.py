@@ -126,7 +126,8 @@ def do_tasks(address, name, model, file_name=None, should_clean=False):
     if should_clean:
         records = [text_cleaner(r) for r in records]
     saved_file_name = file_name if file_name is not None else name
-    excute_ai_task(prompt, records, saved_file_name, model)           
+    excute_ai_task(prompt, records, saved_file_name, model)   
+    time.sleep(60)        
               
   
 def run_baseline():
@@ -136,30 +137,32 @@ def run_baseline():
         eco_file = '../dataset/ecommerceDataset_test_mini.csv'
         fin_file = '../dataset/financial_sentiment_test_mini.csv'
         
-        # do_tasks(sms_file, 'sms', model)
-        # time.sleep(60)
-        do_tasks(tweets_file, 'tweets', model, file_name='tweets_new_4')
-        # time.sleep(60)
-        # do_tasks(eco_file, 'ecommerce', model)
-        # time.sleep(60)
-        # do_tasks(fin_file, 'financial', model)
-        # time.sleep(60)           
+        do_tasks(sms_file, 'sms', model)
+        do_tasks(tweets_file, 'tweets', model)
+        do_tasks(eco_file, 'ecommerce', model)
+        do_tasks(fin_file, 'financial', model)         
               
               
 def run_tweets():
     for i in range(5):
         for model in ['gpt-4-1106-preview', 'gpt-3.5-turbo-1106']:
             tweets_file = '../dataset/Corona_NLP_1_test_mini.csv'
+            prompt_file = 'tweets'
+            file_name = 'tweets'
+            do_tasks(tweets_file, prompt_file, model, file_name=f"{file_name}_new_{i}", should_clean=False)
+            do_tasks(tweets_file, prompt_file, model, file_name=f"{file_name}_clean_{i}", should_clean=True)
+    
+    for i in range(5):
+        for model in ['gpt-4-1106-preview', 'gpt-3.5-turbo-1106']:
+            tweets_file = '../dataset/Corona_NLP_1_test_mini.csv'
             prompt_file = 'tweets_covid'
             file_name = 'tweets_covid'
             do_tasks(tweets_file, prompt_file, model, file_name=f"{file_name}_{i}", should_clean=False)
-            time.sleep(30)
             do_tasks(tweets_file, prompt_file, model, file_name=f"{file_name}_clean_{i}", should_clean=True)
-            time.sleep(30)
             
 
               
 if __name__ == "__main__":
     openai.api_key = os.getenv('OPENAI_API_KEY') or 'YOUR_OPEN_AI_KEY'
-    
+    run_baseline()
     run_tweets()

@@ -2,7 +2,7 @@
 import json
 import pandas as pd
 from handle_dataset import SMS_LABELS, CORONA_LABELS, ECOMMERCE_LABELS, FINANCIAL_LABELS
-from sklearn.metrics import accuracy_score, f1_score        
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix        
         
 def get_results(model, name):
     f = f"ai_results/{model}/{name}.txt"
@@ -24,6 +24,12 @@ def get_results(model, name):
     return keys, results, errors
 
 
+def print_resutls(model, name, y_true, y_pred):
+    print(f"==={model} {name}====")
+    print("{:.4f} & {:.4f}".format(accuracy_score(y_true, y_pred), f1_score(y_true, y_pred, average='macro')))
+    print(confusion_matrix(y_true, y_pred))
+    print("\n")
+
 def gpts(model, ds, name, label_map):
     keys, results, errors = get_results(model, name)
     
@@ -34,10 +40,15 @@ def gpts(model, ds, name, label_map):
         print(f"Error: {name} has {len(y_true)} records, but {len(results)} results")
         return 
     
-    y_pred = [label_map[r.lower()]for r in results]
-    print(f"==={model} {name}====")
-    print("{:.4f} & {:.4f}".format(accuracy_score(y_true, y_pred), f1_score(y_true, y_pred, average='macro')))
-    print("\n")
+    y_pred = []
+    for r in results:
+        if r.lower() in label_map.keys():
+            y_pred.append(label_map[r.lower()])
+        else:
+            # print(f"{name} {model} has error on {r}")
+            y_pred.append(1)
+    
+    print_resutls(model, name, y_true, y_pred)
 
 def llamas(model, ds, name, label_map):
     f = f"ai_results/{model}/{name}.txt"
@@ -70,17 +81,15 @@ def llamas(model, ds, name, label_map):
             elif type(values) == dict:
                 v = values[list(values.keys())[0]]
                 v = label_map[v.lower()]
-                v = v if v is not None else -1
+                v = v if v is not None else 1 # default to neural
                 y_pred.append(v)
             else:
                 raise Exception("not supported type")
         except Exception as e:
-            # print(f"{name} has error on {key}, {values} {e}")
-            y_pred.append(-1)
+            # default to neural
+            y_pred.append(1)
+    print_resutls(model, name, y_true, y_pred)
     
-    print(f"==={model} {name}====")
-    print("{:.4f} & {:.4f}".format(accuracy_score(y_true, y_pred), f1_score(y_true, y_pred, average='macro')))
-    print("\n")
 
 def run_to_get_reports(model, ds, name, label_map):
     label_map = {k.lower(): v for k, v in label_map.items()}
@@ -89,46 +98,33 @@ def run_to_get_reports(model, ds, name, label_map):
         llamas(model, ds, name, label_map)
     else:
         gpts(model, ds, name, label_map)
-    
 
-# if __name__ == '__main__':
-#     models = ['gpt3_5', 'gpt4', 'llama2']
-#     ds = ['../dataset/sms_spam_test_mini.csv', '../dataset/Corona_NLP_1_test_mini.csv',
-#         '../dataset/ecommerceDataset_test_mini.csv', '../dataset/financial_sentiment_test_mini.csv']
-#     names = ['sms', 'tweets', 'ecommerce', 'financial']
-#     label_maps = [SMS_LABELS, CORONA_LABELS, ECOMMERCE_LABELS, FINANCIAL_LABELS]
+
+def for_4_dataset():
+    models = ['gpt3_5', 'gpt4', 'llama2']
+    ds = ['../dataset/sms_spam_test_mini.csv', '../dataset/Corona_NLP_1_test_mini.csv',
+        '../dataset/ecommerceDataset_test_mini.csv', '../dataset/financial_sentiment_test_mini.csv']
+    names = ['sms', 'tweets', 'ecommerce', 'financial']
+    CORONA_LABELS = {'Negative': 0, 'Neutral': 1, 'Positive': 2}
+    label_maps = [SMS_LABELS, CORONA_LABELS, ECOMMERCE_LABELS, FINANCIAL_LABELS]
     
-#     for model in models:
-#         for i in range(len(ds)):
-#             run_to_get_reports(model, ds[i], names[i], label_maps[i])
+    for i in range(len(ds)):
+        for model in models:
+            run_to_get_reports(model, ds[i], names[i], label_maps[i])
+
+def for_tweets():
+    models = ['gpt3_5', 'gpt4', 'llama2']
+    ds = '../dataset/Corona_NLP_1_test_mini.csv'
+    name = 'tweets'
+    CORONA_LABELS = {'Negative': 0, 'Neutral': 1, 'Positive': 2}
+    
+    for i in range(5):
+        for model in models:
+            run_to_get_reports(model, ds, f"{name}_new_{i}", CORONA_LABELS)
+            run_to_get_reports(model, ds, f"{name}_clean_{i}", CORONA_LABELS)
+            run_to_get_reports(model, ds, f"{name}_covid_{i}", CORONA_LABELS)
+            run_to_get_reports(model, ds, f"{name}_covid_{i}", CORONA_LABELS)
 
 if __name__ == '__main__':
-    # models = ['gpt3_5', 'gpt4']
-    models = ['llama2']
-    ds = ['../dataset/Corona_NLP_1_test_mini.csv']
-    names = []
-    for i in range(1, 6, 1):
-        names.append(f"tweets_new_{i}")
-        # if i > 0:
-        #     names.append(f"tweets_new_{i}")
-        # else:
-        #     names.append(f"tweets_new")
-            
-    # for i in range(5):
-    #     if i > 0:
-    #         names.append(f"tweets_clean_{i}")
-    #     else:
-    #         names.append(f"tweets_clean")
-    for i in range(1, 6, 1):
-        names.append(f"tweets_clean_{i}")
-        # if i > 0:
-        #     names.append(f"tweets_clean_{i}")
-        # else:
-        #     names.append(f"tweets_clean")
-    label_maps = [CORONA_LABELS]
-    
-    for model in models:
-        for i in range(len(names)):
-            run_to_get_reports(model, ds[0], names[i], label_maps[0])
-    
-    
+    for_4_dataset()
+    for_tweets()
