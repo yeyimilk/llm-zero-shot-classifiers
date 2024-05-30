@@ -5,6 +5,7 @@ The new version of code has released
 ### Code
 #### Baseline
 > python run_baseline # run ML NN baselines
+
 > python run_bart_deberta # run bart deberta models 
 
 #### LLMs
@@ -12,6 +13,7 @@ The new version of code has released
 
 I would suggest you to run them separately to avoid conda env conflicts
 > python run_fschat # vicuda
+
 > python run_gemini
 etc
 
@@ -19,12 +21,14 @@ etc
 ##### Llama3
 For details of how to finetune llama3, please checkout https://github.com/unslothai/unsloth
 > python finetune_llama3 # finetune llama3-8B model
+
 > python run_finetuned_llama3 # run for finetuned llam3-8B model, you need to adjust the model path
 
 ##### Qwen
 For details of how to finetune Qwen, please checkout https://github.com/QwenLM/Qwen/blob/main/finetune/finetune_lora_single_gpu.sh
 
 > sh ./finetune_qwen.sh # you need to put this script under Qwen folder of Qwen source code, and adjust the dataset path folder
+
 > python run_finetuned_qwen # run for finetuned llam3-8B model, you need to adjust the model path
 
 ### Experimental Results
