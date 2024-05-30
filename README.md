@@ -1,6 +1,31 @@
 # Large Language Models are zero-shot text classifiers
 
-> The new version of code will be released soon
+The new version of code has released
+
+### Code
+#### Baseline
+> python run_baseline # run ML NN baselines
+> python run_bart_deberta # run bart deberta models 
+
+#### LLMs
+> python run_llms # run all LLMs, ChatGPT, Gemini, Vicuna, Qwen, etc, you can also run files simultaneously
+
+I would suggest you to run them separately to avoid conda env conflicts
+> python run_fschat # vicuda
+> python run_gemini
+etc
+
+#### Finetune
+##### Llama3
+For details of how to finetune llama3, please checkout https://github.com/unslothai/unsloth
+> python finetune_llama3 # finetune llama3-8B model
+> python run_finetuned_llama3 # run for finetuned llam3-8B model, you need to adjust the model path
+
+##### Qwen
+For details of how to finetune Qwen, please checkout https://github.com/QwenLM/Qwen/blob/main/finetune/finetune_lora_single_gpu.sh
+
+> sh ./finetune_qwen.sh # you need to put this script under Qwen folder of Qwen source code, and adjust the dataset path folder
+> python run_finetuned_qwen # run for finetuned llam3-8B model, you need to adjust the model path
 
 ### Experimental Results
 
@@ -73,8 +98,18 @@ For more details and results, please checkout
 ## Cite
 If you can find our project is useful, please cite our paper
 
-[Large Language Models Are Zero-Shot Text Classifiers](https://arxiv.org/abs/2312.01044):
+[Smart Expert System: Large Language Models as Text Classifiers](https://arxiv.org/abs/2405.10523):
 
+```
+@article{wang2024smart,
+  title={Smart Expert System: Large Language Models as Text Classifiers},
+  author={Wang, Zhiqiang and Pang, Yiran and Lin, Yanbin},
+  journal={arXiv preprint arXiv:2405.10523},
+  year={2024}
+}
+```
+
+[Large Language Models Are Zero-Shot Text Classifiers](https://arxiv.org/abs/2312.01044):
 ```
 @article{wang2023large,
   title={Large Language Models Are Zero-Shot Text Classifiers},

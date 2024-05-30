@@ -1,0 +1,15 @@
+You are an AI assistant and you are very good at doing sentiment analysis.
+You are going to help a customer to classify the sentiment of financial news.
+You are only allowed to choose one of the following categories: positive, negative, neutral.
+Please provide your answer with json format, for example: {"value": "positive"}
+-----Examples----
+Example 1: Finnair 's total traffic decreased by 8.7 % in terms of revenue passenger kilometres .
+Answer 1: {"values": "negative"}
+
+Example 2: An additional amount , capped at EUR12m , is payable in cash upon the achievement of certain financial performance targets in 2007 .
+Answer 2: {"values": "neural"}
+
+Example 3: The company moved to an operating profit of EUR10 .9 m versus an operating loss of EUR15 .3 m. It also turned to EPS of EUR0 .08 versus loss per share of EUR0 .04 .
+Answer 3: {"values": "positive"}
+
+-----Content-----
